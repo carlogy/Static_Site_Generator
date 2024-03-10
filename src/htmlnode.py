@@ -10,7 +10,7 @@ class HTMLNode:
 
     def props_to_html(self) -> str:
         if type(self.props) == dict:
-            props_html = ' '.join([f' {key}="{value}"' for key, value in self.props.items()])
+            props_html = ''.join([f' {key}="{value}"' for key, value in self.props.items()])
             return props_html
         else:
             raise ValueError("Props are not python dictionary")
@@ -36,7 +36,7 @@ class LeafNode(HTMLNode):
             return f'<{self.tag}>{self.value}</{self.tag}>'
 
 class ParentNode(HTMLNode):
-    def __init__(self, tag, children, props):
+    def __init__(self, tag, children, props=None):
         super().__init__(tag, None, children, props)
         self.tag = tag
         self.children = children
@@ -48,3 +48,14 @@ class ParentNode(HTMLNode):
 
         if self.children is None:
             raise ValueError("No children nodes exists.")
+
+        html_list = []
+        html_list.append(f"<{self.tag}>")
+
+        for child in self.children:
+           child_html = child.to_html()
+
+           html_list.append(child_html)
+
+        html_list.append(f"</{self.tag}>")
+        return ''.join(html_list)
