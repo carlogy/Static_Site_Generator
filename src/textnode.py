@@ -1,3 +1,4 @@
+from htmlnode import LeafNode
 
 class TextNode:
     def __init__(self, text, text_type, url):
@@ -10,3 +11,27 @@ class TextNode:
 
     def __repr__(self) -> str:
         return f"{self}({self.text}, {self.text_type}, {self.url})"
+
+def text_node_to_html_node(text_node):
+
+    type = text_node.text_type
+    text = text_node.text
+    url = text_node.url
+
+    if type == "text":
+     return LeafNode(None, text)
+    if type == "bold":
+      return LeafNode("b", text)
+    if type == "italic":
+      return LeafNode("i", text)
+    if type == "code":
+        return LeafNode("code", text)
+    if type == "link":
+        return LeafNode("a", text, {"href" : url})
+    if type == "img":
+        return LeafNode("img","" ,{"src" : url, "alt" : text})
+
+    raise Exception("Invalid TextNode passed: please pass a text node with a valid text_type(text, bold, italic, code, link, img).")
+
+def split_nodes_delimiter(old_nodes, delimiter, text_type):
+    pass
