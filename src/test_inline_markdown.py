@@ -1,7 +1,9 @@
 import unittest
 
 from inline_markdown import (
-    split_nodes_delimiter
+    split_nodes_delimiter,
+    extract_markdown_links,
+    extract_markdown_images
 )
 
 from textnode import TextNode
@@ -84,6 +86,41 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode(" word", "text"),
             ],
             split_nodes_delimiter([node], "*", "italic"),
+        )
+
+    def test_multiple_images(self):
+        text = "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and ![another](https://i.imgur.com/dfsdkjfd.png)"
+        self.assertListEqual(
+            [
+                ("image", "https://i.imgur.com/zjjcJKZ.png"),
+                ("another", "https://i.imgur.com/dfsdkjfd.png")
+            ],
+            extract_markdown_images(text)
+        )
+
+    def test_multiple_links(self):
+        text = text = "This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)"
+        self.assertListEqual(
+            [
+                ("link", "https://www.example.com"),
+                ("another", "https://www.example.com/another")
+            ],
+            extract_markdown_links(text)
+
+        )
+
+    def test_no_images(self):
+        text = "This text doesn't include images."
+        self.assertListEqual(
+            [],
+            extract_markdown_images(text)
+        )
+
+    def test_no_links(self):
+        text = "This text doesn't include links."
+        self.assertListEqual(
+            [],
+            extract_markdown_links(text)
         )
 
 
