@@ -40,3 +40,72 @@ def extract_markdown_images(text):
 def extract_markdown_links(text):
     matches = re.findall(r"\[(.*?)\]\((.*?)\)", text)
     return matches
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    for old_node in old_nodes:
+        if old_node.text_type != "text":
+            new_nodes.append(old_node)
+            continue
+        original_text = old_node.text
+        images = extract_markdown_images(original_text)
+        if len(images) == 0:
+            new_nodes.append(old_node)
+            continue
+        for image in images:
+            sections = original_text.split(f"![{image[0]}]({image[1]})", 1)
+            if len(sections) != 2:
+                raise ValueError("Invalid markdown, image section not closed")
+            if sections[0] != "":
+                new_nodes.append(TextNode(sections[0], "text"))
+            new_nodes.append(
+                TextNode(
+                    image[0],
+                    "text",
+                    image[1],
+                )
+            )
+            original_text = sections[1]
+        if original_text != "":
+            new_nodes.append(TextNode(original_text, "text"))
+    return new_nodes
+
+    # new_nodes = []
+    # for node in old_nodes:
+    #     if node.text_type != "text":
+    #         new_nodes.append(node)
+    #         continue
+    #     current_text = node.text
+    #     extracted_images = extract_markdown_images(current_text)
+    #     if len(extracted_images) == 0:
+    #         new_nodes.append(node)
+    #         continue
+    #     for image in extracted_images:
+    #         split_image = current_text.split(f"![{image[0]}]({image[1]})", 1)
+    #         if len(split_image) != 2:
+    #             raise ValueError("This is invalid markdown, image section not closed")
+    #         if split_image[0] != "":
+    #             new_nodes.append(TextNode(split_image[0], "text"))
+    #             new_nodes.append(TextNode(image[0], "image", image[1]))
+    #         if split_image[1]:
+    #             current_text = split_image[1]
+    #     if current_text != "":
+    #         new_nodes.append(TextNode(current_text, "text"))
+    # return new_nodes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def split_nodes_link(old_nodes):
+    pass
