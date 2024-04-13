@@ -23,13 +23,6 @@ class TextNode:
         return f"TextNode({self.text}, {self.text_type}, {self.url})"
 
     def text_node_to_html_node(text_node):
-        # if (text_node.text_type != text_type_text
-        #     and text_node.text_type != text_type_bold
-        #     and text_node.text_type != text_type_italic
-        #     and text_node != text_type_code
-        #     and text_node.text_type != text_type_link
-        #     and text_node.text_type != text_type_image):
-        #         raise ValueError("TextNode text type is invalid")
         if(text_node.text_type == text_type_text):
             return LeafNode(None, text_node.text, None)
         if text_node.text_type == text_type_bold:

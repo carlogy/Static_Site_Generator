@@ -61,7 +61,7 @@ class TestHTMLNode(unittest.TestCase):
         with self.assertRaises(ValueError):
             leafnode.to_html()
 
-    def test_repr(self):
+    def test_repr_Leaf(self):
         leafnode = LeafNode("p", "This is a paragraph", None)
         self.assertEqual(
             repr(leafnode),
@@ -97,7 +97,7 @@ class TestHTMLNode(unittest.TestCase):
         with self.assertRaises(ValueError):
             node.to_html()
 
-    def test_repr(self):
+    def test_repr_Parent(self):
         node = ParentNode(
             "p",
             [
@@ -111,9 +111,6 @@ class TestHTMLNode(unittest.TestCase):
             repr(node),
             "ParentNode(p, [LeafNode(None, Normal text, None), LeafNode(i, italic text, None), LeafNode(None, Normal text, None)], None)"
         )
-
-
-
 
 
 if __name__ == "__main__":

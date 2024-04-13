@@ -3,7 +3,6 @@ import unittest
 from htmlnode import LeafNode
 from textnode import TextNode
 
-
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
         node = TextNode("This is a bold text node", "bold")
@@ -54,9 +53,6 @@ class TestTextNode(unittest.TestCase):
             node.text_node_to_html_node(),
             leaf
         )
-
-
-
 
 if __name__ == "__main__":
     unittest.main()
