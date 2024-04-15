@@ -8,6 +8,7 @@ from inline_markdown import  (
     extract_markdown_images,
     extract_markdown_links,
     split_nodes_delimiter,
+    split_nodes_images,
     text_type_text,
     text_type_bold,
     text_type_italic,
@@ -172,6 +173,46 @@ class TestInlineMarkdown(unittest.TestCase):
             links
         )
 
+    def test_split_nodes_images(self):
+        node = TextNode(
+            "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and another ![second image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png)",
+            text_type_text,
+            None
+        )
+        new_nodes = split_nodes_images([node])
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("This is text with an ", text_type_text),
+                TextNode("image", text_type_image, "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"),
+                TextNode(" and another ", text_type_text),
+                TextNode(
+                    "second image", text_type_image, "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png"
+                ),
+            ]
+        )
+
+    def test_no_image(self):
+        node = TextNode("This text doesn't include images.", text_type_text)
+        new_nodes = split_nodes_images([node])
+        self.assertListEqual(
+            new_nodes,
+            [node]
+        )
+
+    def test_just_images(self):
+        node = TextNode("![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) ![second image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png)", text_type_text)
+        new_nodes = split_nodes_images([node])
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("image", text_type_image, "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"),
+                TextNode(
+                        "second image", text_type_image, "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png"
+                    ),
+            ]
+
+        )
 
 
 
