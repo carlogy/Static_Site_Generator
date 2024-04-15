@@ -9,6 +9,7 @@ from inline_markdown import  (
     extract_markdown_links,
     split_nodes_delimiter,
     split_nodes_images,
+    split_nodes_links,
     text_type_text,
     text_type_bold,
     text_type_italic,
@@ -212,6 +213,37 @@ class TestInlineMarkdown(unittest.TestCase):
                     ),
             ]
 
+        )
+
+    def test_split_nodes_links(self):
+        node = TextNode("This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)", text_type_text)
+        new_nodes = split_nodes_links([node])
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("This is text with a ", text_type_text),
+                TextNode("link", text_type_link,"https://www.example.com"),
+                TextNode(" and ", text_type_text),
+                TextNode("another", text_type_link, "https://www.example.com/another")
+            ]
+        )
+
+    def test_no_link(self):
+        node = TextNode("This text doesn't include links.", text_type_text)
+        new_nodes = split_nodes_links([node])
+        self.assertListEqual(
+            new_nodes,
+            [node]
+        )
+    def test_just_links(self):
+        node = TextNode("[link](https://www.example.com) [another](https://www.example.com/another)", text_type_text)
+        new_nodes = split_nodes_links([node])
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("link", text_type_link,"https://www.example.com"),
+                TextNode("another", text_type_link, "https://www.example.com/another")
+            ]
         )
 
 

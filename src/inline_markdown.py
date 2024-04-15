@@ -17,7 +17,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             and node.text_type != text_type_bold
             and node.text_type != text_type_italic
             and node.text_type != text_type_code
-            and node.text_typwe != text_type_link
+            and node.text_type != text_type_link
             and node.text_type != text_type_image):
                 new_nodes.append(node)
         sections = []
@@ -83,4 +83,32 @@ def split_nodes_images(old_nodes):
     return new_nodes
 
 def split_nodes_links(old_nodes):
-    pass
+    new_nodes = []
+    for node in old_nodes:
+        current_text = node.text
+        links = extract_markdown_links(current_text)
+
+        if len(links) == 0 and current_text != "":
+            new_nodes.append(node)
+
+        for link in links:
+            split_links = current_text.split(f"[{link[0]}]({link[1]})", 1)
+
+            if not split_links[0] and split_links[1]:
+                new_nodes.append(TextNode(link[0], text_type_link, link[1]))
+                current_text = split_links[1]
+                continue
+            if not split_links[0].strip() and not split_links[1]:
+                new_nodes.append(TextNode(link[0], text_type_link, link[1]))
+                continue
+            if split_links[0] and "[" in split_links[1]:
+                new_nodes.append(TextNode(split_links[0], text_type_text))
+                new_nodes.append(TextNode(link[0], text_type_link, link[1]))
+                current_text = split_links[1]
+
+            if split_links[0] and not split_links[1]:
+                new_nodes.append(TextNode(split_links[0], text_type_text))
+                new_nodes.append(TextNode(link[0], text_type_link, link[1]))
+                continue
+
+    return new_nodes
