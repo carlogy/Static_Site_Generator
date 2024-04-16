@@ -112,3 +112,29 @@ def split_nodes_links(old_nodes):
                 continue
 
     return new_nodes
+
+def test_to_textnodes(text):
+    starting_node = [TextNode(text, text_type_text)]
+    new_nodes = []
+
+    split_string = split_nodes_delimiter(starting_node, "**", text_type_bold)
+    new_nodes.extend(split_string[:-1])
+    print(new_nodes)
+
+    updated_string = split_nodes_delimiter([split_string[-1]], "*", text_type_italic)
+    new_nodes.extend(updated_string[:-1])
+    print(new_nodes)
+
+
+    updated_string = split_nodes_delimiter([updated_string[-1]], "`", text_type_code)
+    new_nodes.extend(updated_string[:-1])
+    print(f" after code split:{new_nodes}")
+    print(updated_string[-1])
+
+    # image split isn't working need to rework it into it
+    # updated_string = split_nodes_images([updated_string[-1]])
+    # print(f"afterImagesSplit: {updated_string}")
+
+    # link is splitting images as links need to update as well
+    # updated_string = split_nodes_links([updated_string[-1]])
+    # print(updated_string)
