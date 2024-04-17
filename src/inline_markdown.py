@@ -56,31 +56,66 @@ def split_nodes_images(old_nodes):
     for node in old_nodes:
         current_text = node.text
         images = extract_markdown_images(current_text)
-
-        if len(images) == 0 and current_text != "":
+        # print(f"images that were extracted :{images}\n")
+        if len(images) == 0:
             new_nodes.append(node)
-
-
         for image in images:
-            split_images = current_text.split(f"![{image[0]}]({image[1]})", 1)
-            if not split_images[0] and split_images[1]:
-                new_nodes.append(TextNode(image[0], text_type_image, image[1]))
-                current_text = split_images[1]
+            # print(f"the current image we are iterating over is: {image}\n")
+            # print(f"The current text is: {current_text}\n")
+            image_alt_text = image[0]
+            image_src = image[1]
+            split_image_text = current_text.split(f"![{image[0]}]({image[1]})", 1)
+            # print(f"the current text split by image string literal is: {split_image_text}\n")
+            if len(split_image_text[0]) != 0 and split_image_text[1]:
+                new_nodes.append(TextNode(split_image_text[0], text_type_text))
+                new_nodes.append(TextNode(image_alt_text, text_type_image, image_src))
+                current_text = split_image_text[1]
                 continue
-            if not split_images[0].strip() and not split_images[1]:
-                new_nodes.append(TextNode(image[0], text_type_image, image[1]))
+            if len(split_image_text[0]) == 0 and split_image_text[1]:
+                new_nodes.append(TextNode(image_alt_text, text_type_image, image_src))
+                current_text = split_image_text[1]
                 continue
-            if split_images[0] and "![" in split_images[1]:
-                new_nodes.append(TextNode(split_images[0], text_type_text))
-                new_nodes.append(TextNode(image[0], text_type_image, image[1]))
-                current_text = split_images[1]
+            if len(split_image_text[0].strip()) == 0 and len(split_image_text[1]) == 0:
+                new_nodes.append(TextNode(image_alt_text, text_type_image, image_src))
                 continue
-            if split_images[0] and not split_images[1]:
-                new_nodes.append(TextNode(split_images[0], text_type_text))
-                new_nodes.append(TextNode(image[0], text_type_image, image[1]))
-                continue
+            if len(split_image_text[0]) != 0 and not len(split_image_text[1]):
+                new_nodes.append(TextNode(split_image_text[0], text_type_text))
+                new_nodes.append(TextNode(image_alt_text, text_type_image ,image_src))
 
     return new_nodes
+
+
+# ORIDINAL IMPLEMENTATION
+# def split_nodes_images(old_nodes):
+#     new_nodes = []
+#     for node in old_nodes:
+#         current_text = node.text
+#         images = extract_markdown_images(current_text)
+
+#         if len(images) == 0 and current_text != "":
+#             new_nodes.append(node)
+
+
+#         for image in images:
+#             split_images = current_text.split(f"![{image[0]}]({image[1]})", 1)
+#             if not split_images[0] and split_images[1]:
+#                 new_nodes.append(TextNode(image[0], text_type_image, image[1]))
+#                 current_text = split_images[1]
+#                 continue
+#             if not split_images[0].strip() and not split_images[1]:
+#                 new_nodes.append(TextNode(image[0], text_type_image, image[1]))
+#                 continue
+#             if split_images[0] and "![" in split_images[1]:
+#                 new_nodes.append(TextNode(split_images[0], text_type_text))
+#                 new_nodes.append(TextNode(image[0], text_type_image, image[1]))
+#                 current_text = split_images[1]
+#                 continue
+#             if split_images[0] and not split_images[1]:
+#                 new_nodes.append(TextNode(split_images[0], text_type_text))
+#                 new_nodes.append(TextNode(image[0], text_type_image, image[1]))
+#                 continue
+
+#     return new_nodes
 
 def split_nodes_links(old_nodes):
     new_nodes = []
@@ -113,7 +148,7 @@ def split_nodes_links(old_nodes):
 
     return new_nodes
 
-def test_to_textnodes(text):
+def text_to_textnodes(text):
     starting_node = [TextNode(text, text_type_text)]
     new_nodes = []
 
@@ -131,9 +166,15 @@ def test_to_textnodes(text):
     print(f" after code split:{new_nodes}")
     print(updated_string[-1])
 
-    # image split isn't working need to rework it into it
-    # updated_string = split_nodes_images([updated_string[-1]])
-    # print(f"afterImagesSplit: {updated_string}")
+# Need fixed most of the issues, need to ensure that return any non image text
+# after the end of splitting all images from the file
+    updated_string = split_nodes_images([updated_string[-1]])
+    new_nodes.extend(updated_string[:-1])
+    print(f" after image split:{new_nodes}")
+
+    print(updated_string[-1])
+
+
 
     # link is splitting images as links need to update as well
     # updated_string = split_nodes_links([updated_string[-1]])
