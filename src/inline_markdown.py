@@ -57,8 +57,8 @@ def split_nodes_images(old_nodes):
         current_text = node.text
         images = extract_markdown_images(current_text)
         # print(f"images that were extracted :{images}\n")
-        if len(images) == 0:
-            new_nodes.append(node)
+        # if len(images) == 0:
+        #     new_nodes.append(node)
         for image in images:
             # print(f"the current image we are iterating over is: {image}\n")
             # print(f"The current text is: {current_text}\n")
@@ -77,15 +77,20 @@ def split_nodes_images(old_nodes):
                 continue
             if len(split_image_text[0].strip()) == 0 and len(split_image_text[1]) == 0:
                 new_nodes.append(TextNode(image_alt_text, text_type_image, image_src))
+                current_text = split_image_text[1]
                 continue
             if len(split_image_text[0]) != 0 and not len(split_image_text[1]):
                 new_nodes.append(TextNode(split_image_text[0], text_type_text))
-                new_nodes.append(TextNode(image_alt_text, text_type_image ,image_src))
+                new_nodes.append(TextNode(image_alt_text, text_type_image, image_src))
+                current_text = split_image_text[1]
+                continue
+        if current_text != "":
+            new_nodes.append(TextNode(current_text, text_type_text))
 
     return new_nodes
 
 
-# ORIDINAL IMPLEMENTATION
+# ORIGINAL IMPLEMENTATION
 # def split_nodes_images(old_nodes):
 #     new_nodes = []
 #     for node in old_nodes:
@@ -116,66 +121,96 @@ def split_nodes_images(old_nodes):
 #                 continue
 
 #     return new_nodes
-
+#
 def split_nodes_links(old_nodes):
     new_nodes = []
     for node in old_nodes:
         current_text = node.text
         links = extract_markdown_links(current_text)
 
-        if len(links) == 0 and current_text != "":
-            new_nodes.append(node)
 
         for link in links:
-            split_links = current_text.split(f"[{link[0]}]({link[1]})", 1)
 
-            if not split_links[0] and split_links[1]:
-                new_nodes.append(TextNode(link[0], text_type_link, link[1]))
-                current_text = split_links[1]
-                continue
-            if not split_links[0].strip() and not split_links[1]:
-                new_nodes.append(TextNode(link[0], text_type_link, link[1]))
-                continue
-            if split_links[0] and "[" in split_links[1]:
-                new_nodes.append(TextNode(split_links[0], text_type_text))
-                new_nodes.append(TextNode(link[0], text_type_link, link[1]))
-                current_text = split_links[1]
+            link_anchor_text = link[0]
+            url = link[1]
+            split_link_text = current_text.split(f"[{link[0]}]({link[1]})", 1)
 
-            if split_links[0] and not split_links[1]:
-                new_nodes.append(TextNode(split_links[0], text_type_text))
-                new_nodes.append(TextNode(link[0], text_type_link, link[1]))
+            if len(split_link_text[0]) != 0 and split_link_text[1]:
+                new_nodes.append(TextNode(split_link_text[0], text_type_text))
+                new_nodes.append(TextNode(link_anchor_text, text_type_link, url))
+                current_text = split_link_text[1]
                 continue
+            if len(split_link_text[0]) == 0 and split_link_text[1]:
+                new_nodes.append(TextNode(link_anchor_text, text_type_link, url))
+                current_text = split_link_text[1]
+                continue
+            if len(split_link_text[0].strip()) == 0 and len(split_link_text[1]) == 0:
+                new_nodes.append(TextNode(link_anchor_text, text_type_link, url))
+                current_text = split_link_text[1]
+                continue
+            if len(split_link_text[0]) != 0 and not len(split_link_text[1]):
+                new_nodes.append(TextNode(split_link_text[0], text_type_text))
+                new_nodes.append(TextNode(link_anchor_text, text_type_link ,url))
+                current_text = split_link_text[1]
+                continue
+        if current_text != "":
+            new_nodes.append(TextNode(current_text, text_type_text))
 
     return new_nodes
+
+# This is the original implementation of split_nodes_links:
+
+# def split_nodes_links(old_nodes):
+#     new_nodes = []
+#     for node in old_nodes:
+#         current_text = node.text
+#         links = extract_markdown_links(current_text)
+
+#         if len(links) == 0 and current_text != "":
+#             new_nodes.append(node)
+
+#         for link in links:
+#             split_links = current_text.split(f"[{link[0]}]({link[1]})", 1)
+
+#             if not split_links[0] and split_links[1]:
+#                 new_nodes.append(TextNode(link[0], text_type_link, link[1]))
+#                 current_text = split_links[1]
+#                 continue
+#             if not split_links[0].strip() and not split_links[1]:
+#                 new_nodes.append(TextNode(link[0], text_type_link, link[1]))
+#                 continue
+#             if split_links[0] and "[" in split_links[1]:
+#                 new_nodes.append(TextNode(split_links[0], text_type_text))
+#                 new_nodes.append(TextNode(link[0], text_type_link, link[1]))
+#                 current_text = split_links[1]
+
+#             if split_links[0] and not split_links[1]:
+#                 new_nodes.append(TextNode(split_links[0], text_type_text))
+#                 new_nodes.append(TextNode(link[0], text_type_link, link[1]))
+#                 continue
+
+#     return new_nodes
 
 def text_to_textnodes(text):
     starting_node = [TextNode(text, text_type_text)]
     new_nodes = []
 
-    split_string = split_nodes_delimiter(starting_node, "**", text_type_bold)
-    new_nodes.extend(split_string[:-1])
-    print(new_nodes)
+    split_node_list = split_nodes_delimiter(starting_node, "**", text_type_bold)
+    new_nodes.extend(split_node_list[:-1])
 
-    updated_string = split_nodes_delimiter([split_string[-1]], "*", text_type_italic)
-    new_nodes.extend(updated_string[:-1])
-    print(new_nodes)
+    split_node_list = split_nodes_delimiter([split_node_list[-1]], "*", text_type_italic)
+    new_nodes.extend(split_node_list[:-1])
 
+    split_node_list = split_nodes_delimiter([split_node_list[-1]], "`", text_type_code)
+    new_nodes.extend(split_node_list[:-1])
 
-    updated_string = split_nodes_delimiter([updated_string[-1]], "`", text_type_code)
-    new_nodes.extend(updated_string[:-1])
-    print(f" after code split:{new_nodes}")
-    print(updated_string[-1])
-
-# Need fixed most of the issues, need to ensure that return any non image text
-# after the end of splitting all images from the file
-    updated_string = split_nodes_images([updated_string[-1]])
-    new_nodes.extend(updated_string[:-1])
-    print(f" after image split:{new_nodes}")
-
-    print(updated_string[-1])
+    split_node_list = split_nodes_images([split_node_list[-1]])
+    new_nodes.extend(split_node_list[:-1])
 
 
+    split_node_list = split_nodes_links([split_node_list[-1]])
+    new_nodes.extend(split_node_list)
 
-    # link is splitting images as links need to update as well
-    # updated_string = split_nodes_links([updated_string[-1]])
-    # print(updated_string)
+    return new_nodes
+
+    # print(updated_string[-1])
