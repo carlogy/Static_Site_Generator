@@ -12,3 +12,7 @@ def markdown_to_blocks(markdown):
     # print(f"scrubbed blocks list:\n {scrubbed_blocks} ")
 
     return scrubbed_blocks
+
+
+def block_to_block_type(block):
+    pass
