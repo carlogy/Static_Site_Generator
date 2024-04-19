@@ -1,3 +1,14 @@
+
+block_type_paragraph = "paragraph"
+block_type_heading = "heading"
+block_type_code = "code"
+block_type_quote = "quote"
+block_type_unordered_list = "unordered_list"
+block_type__ordered_list = "ordered_list"
+
+
+
+
 def markdown_to_blocks(markdown):
     split_markdown = markdown.split("\n\n")
 
@@ -15,4 +26,18 @@ def markdown_to_blocks(markdown):
 
 
 def block_to_block_type(block):
-    pass
+
+    print(f"Block: {block}")
+
+    lines_in_block = block.split("\n")
+
+    print(f"Split by new line list:\n{lines_in_block}")
+
+    for line in lines_in_block:
+        match line[0]:
+            case "#":
+                return block_type_heading
+            case "```":
+                return block_type_code
+            case ">":
+                if len(lines_in_block) > 1:

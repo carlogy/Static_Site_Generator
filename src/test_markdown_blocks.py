@@ -1,5 +1,5 @@
 import unittest
-from markdown_blocks import markdown_to_blocks
+from markdown_blocks import block_to_block_type, markdown_to_blocks
 
 class TestMarkdownBlocks(unittest.TestCase):
     def test_multi_line_block(self):
@@ -38,6 +38,14 @@ class TestMarkdownBlocks(unittest.TestCase):
                 "This is a paragraph with a space at the end"
             ]
         )
+    def test_block_to_block_type(self):
+
+        markdown_blocks =  [
+            "This is **bolded** paragraph",
+            "This is another paragraph with *italic* text and `code` here\nThis is the same paragraph on a new line",
+            "* This is a list\n* with items"
+        ]
+        block_to_block_type(markdown_blocks[0])
 
 
 
