@@ -4,9 +4,7 @@ block_type_heading = "heading"
 block_type_code = "code"
 block_type_quote = "quote"
 block_type_unordered_list = "unordered_list"
-block_type__ordered_list = "ordered_list"
-
-
+block_type_ordered_list = "ordered_list"
 
 
 def markdown_to_blocks(markdown):
@@ -34,10 +32,45 @@ def block_to_block_type(block):
     print(f"Split by new line list:\n{lines_in_block}")
 
     for line in lines_in_block:
-        match line[0]:
-            case "#":
+        print(f"the current line: {line}")
+        print(f"the first characters in line: {line[:2]}\n {len(line[:2])}")
+        first_two_chars = line[:2]
+
+        match first_two_chars:
+
+            case "# ":
+
                 return block_type_heading
             case "```":
                 return block_type_code
             case ">":
                 if len(lines_in_block) > 1:
+                    i = 0
+                    while i < len(lines_in_block):
+                        first_chars = lines_in_block[i][:2]
+                        if first_chars != "> ":
+                            raise ValueError("Invalid markdow!")
+                        i += 1
+                return block_type_quote
+            case "* ":
+                if len(lines_in_block) > 1:
+                    i = 0
+                    while i < len(lines_in_block):
+                        first_chars = lines_in_block[i][:2]
+                        print(first_chars)
+                        if first_chars != "* " and first_chars != "- ":
+                            raise ValueError(f"Invalid unordered list markdown\n{lines_in_block[i][:2]}, {len(lines_in_block[i][:2])}")
+                        i += 1
+                    return block_type_unordered_list
+
+            case "1." :
+                if len(lines_in_block) > 1:
+                    i = 0
+                    while i < len(lines_in_block):
+                        first_chars = lines_in_block[i][:2]
+                        if first_chars != f"{i + 1}.":
+                            raise ValueError(f"Invalid ordered list markdown.\n{first_chars}, {len(first_chars)} {i}.")
+                        i += 1
+                return block_type_ordered_list
+            case _:
+                return block_type_paragraph
