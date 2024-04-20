@@ -49,7 +49,7 @@ class TestMarkdownBlocks(unittest.TestCase):
         )
     def test_heading_block(self):
 
-        markdown_block = "# This is a smaller header"
+        markdown_block = "## This is a smaller header"
         block_type = block_to_block_type(markdown_block)
         self.assertEqual(
             block_type,
@@ -80,6 +80,43 @@ class TestMarkdownBlocks(unittest.TestCase):
             block_type,
             block_type_ordered_list
         )
+
+    def test_code_block(self):
+        markdown_text = "``` def hello_world():\n\tprint('Hello World!') ```"
+        block_type = block_to_block_type(markdown_text)
+        self.assertEqual(
+            block_type,
+            block_type_code
+        )
+
+    def test_quote_block(self):
+        markdown_text = "> This is a quote\n> and another line of for a quote"
+        block_type = block_to_block_type(markdown_text)
+        self.assertEqual(
+            block_type,
+            block_type_quote
+        )
+
+    def test_not_mixed_unorded_list(self):
+        markdown_text = "* This is an unordered list item\n- this is a second list item"
+        block_type = block_to_block_type(markdown_text)
+        self.assertEqual(
+            block_type,
+            block_type_unordered_list
+        )
+
+    def test_not_sequential_ordered_list(self):
+        markdown_text = "1. This is an ordered list item\n3. This is another ordered list item out of order"
+
+        with self.assertRaises(ValueError):
+           block_to_block_type(markdown_text)
+
+    def test_not_valid_quote(self):
+        markdown_text = "` This is an invalid quote markdown text string `"
+
+        with self.assertRaises(ValueError):
+            block_to_block_type(markdown_text)
+
 
 
 if __name__ == "__main__":
