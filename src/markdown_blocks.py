@@ -1,4 +1,8 @@
 
+from htmlnode import HTMLNode, LeafNode
+from textnode import TextNode
+
+
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"
 block_type_code = "code"
@@ -9,30 +13,18 @@ block_type_ordered_list = "ordered_list"
 def markdown_to_blocks(markdown):
     split_markdown = markdown.split("\n\n")
 
-    # print(f"Original markdown input to process:\n {markdown}\n")
-
-    # print(f"split markdown list by new line\n {split_markdown}\n")
-
-    # Need to clean up the list to remove white spacing and empty text blocks
-
     scrubbed_blocks = [block.strip() for block in split_markdown if block != " "]
-    # print(f"scrubbed blocks list:\n {scrubbed_blocks} ")
 
     return scrubbed_blocks
 
 def block_to_block_type(block):
 
-    # print(f"Block: {block}")
-
     lines_in_block = block.split("\n")
 
-    # print(f"Split by new line list:\n{lines_in_block}")
-
     for line in lines_in_block:
-        print(f"the current line: {line}")
-        print(f"the first characters in line: {line[:2]}\n {len(line[:2])}")
+        # print(f"the current line: {line}")
+        # print(f"the first characters in line: {line[:2]}\n {len(line[:2])}")
         first_two_chars = line[0]
-
 
         match first_two_chars:
 
@@ -78,7 +70,6 @@ def block_to_block_type(block):
                             return block_type_paragraph
                         i += 1
                     return block_type_unordered_list
-
             case "1" :
                 if len(lines_in_block) > 1:
                     i = 0
@@ -90,3 +81,32 @@ def block_to_block_type(block):
                 return block_type_ordered_list
             case _:
                 return block_type_paragraph
+
+
+def paragraph_block_to_html(block, block_type):
+
+    if block_type != block_type_paragraph:
+        raise ValueError("invalid blocktype.")
+    paragraph_node = LeafNode("p", block, None)
+    return paragraph_node
+
+
+def heading_block_to_htmlNode(block, block_type):
+
+    if block_type != block_type_heading:
+        raise ValueError("invalid blocktype.")
+    count = 0
+    for char in block:
+        if char == "#":
+            count += 1
+    heading_node = LeafNode(f"h{count}", block.lstrip("# "), None)
+    return heading_node
+
+def unorderd_list_block_to_htmlNode(block, block_type):
+    pass
+
+def ordered_list_block_to_htmlNode(block, block_type):
+    pass
+
+def quote_block_to_htmlNode(block, block_type):
+    pass
