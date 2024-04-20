@@ -107,16 +107,19 @@ class TestMarkdownBlocks(unittest.TestCase):
 
     def test_not_sequential_ordered_list(self):
         markdown_text = "1. This is an ordered list item\n3. This is another ordered list item out of order"
-
-        with self.assertRaises(ValueError):
-           block_to_block_type(markdown_text)
+        block_type = block_to_block_type(markdown_text)
+        self.assertEqual(
+            block_type,
+            block_type_paragraph
+        )
 
     def test_not_valid_quote(self):
         markdown_text = "` This is an invalid quote markdown text string `"
-
-        with self.assertRaises(ValueError):
-            block_to_block_type(markdown_text)
-
+        block_type = block_to_block_type(markdown_text)
+        self.assertEqual(
+            block_type,
+            block_type_paragraph
+        )
 
 
 if __name__ == "__main__":

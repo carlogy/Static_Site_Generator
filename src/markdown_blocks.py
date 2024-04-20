@@ -33,18 +33,30 @@ def block_to_block_type(block):
         print(f"the first characters in line: {line[:2]}\n {len(line[:2])}")
         first_two_chars = line[0]
 
+
         match first_two_chars:
 
             case "#":
-                return block_type_heading
+                if line.startswith("# "):
+                    return block_type_heading
+                if line.startswith("## "):
+                    return block_type_heading
+                if line.startswith("### "):
+                    return block_type_heading
+                if line.startswith("#### "):
+                    return block_type_heading
+                if line.startswith("##### "):
+                    return block_type_heading
+                if line.startswith("###### "):
+                    return block_type_heading
             case "`":
                 if len(lines_in_block) > 1:
                     first_line_chars = lines_in_block[0][:3]
                     last_line_chars = lines_in_block[-1][:3]
                     if first_line_chars != "```" and last_line_chars != "```":
-                        raise ValueError("Invalid quote markdown")
+                        return block_type_paragraph
                 if line[:3] != "```" and line[:-3] != "```":
-                    raise ValueError("Invalid quote markdown")
+                    return block_type_paragraph
 
                 return block_type_code
             case ">":
@@ -53,7 +65,7 @@ def block_to_block_type(block):
                     while i < len(lines_in_block):
                         first_chars = lines_in_block[i][:2]
                         if first_chars != "> ":
-                            raise ValueError("Invalid quote markdown")
+                            return block_type_paragraph
                         i += 1
                 return block_type_quote
             case "*":
@@ -63,7 +75,7 @@ def block_to_block_type(block):
                         first_chars = lines_in_block[i][:2]
                         print(first_chars)
                         if first_chars != "* " and first_chars != "- ":
-                            raise ValueError(f"Invalid unordered list markdown\n{lines_in_block[i][:2]}, {len(lines_in_block[i][:2])}")
+                            return block_type_paragraph
                         i += 1
                     return block_type_unordered_list
 
@@ -73,7 +85,7 @@ def block_to_block_type(block):
                     while i < len(lines_in_block):
                         first_chars = lines_in_block[i][:2]
                         if first_chars != f"{i + 1}.":
-                            raise ValueError(f"Invalid ordered list markdown.\n{first_chars}, {len(first_chars)} {i}.")
+                            return block_type_paragraph
                         i += 1
                 return block_type_ordered_list
             case _:
