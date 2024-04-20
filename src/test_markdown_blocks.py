@@ -1,14 +1,17 @@
 import unittest
 
+from htmlnode import LeafNode
 from markdown_blocks import (
     block_to_block_type,
+    heading_block_to_html,
     markdown_to_blocks,
     block_type_paragraph,
     block_type_heading,
     block_type_code,
     block_type_quote,
     block_type_unordered_list,
-    block_type_ordered_list
+    block_type_ordered_list,
+    paragraph_block_to_html
 )
 
 class TestMarkdownBlocks(unittest.TestCase):
@@ -120,6 +123,27 @@ class TestMarkdownBlocks(unittest.TestCase):
             block_type,
             block_type_paragraph
         )
+
+    def test_paragraph_to_HtmlNode(self):
+        markdown = "This is a paragraph of text\nWith a another line of text in same text block."
+        block_type = block_to_block_type(markdown)
+        htmlNode = paragraph_block_to_html(markdown, block_type)
+        self.assertEqual(
+            htmlNode,
+            LeafNode("p", "This is a paragraph of text\nWith a another line of text in same text block.", None)
+        )
+
+    def test_heading1_to_HtmlNode(self):
+        markdown = "# This is a heading"
+        block_type = block_to_block_type(markdown)
+        htmlNode = heading_block_to_html(markdown, block_type)
+
+        self.assertEqual(
+            htmlNode,
+            LeafNode("h1", "This is a heading", None)
+        )
+
+
 
 
 if __name__ == "__main__":
