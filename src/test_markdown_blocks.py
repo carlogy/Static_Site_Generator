@@ -1,9 +1,10 @@
 import unittest
 
-from htmlnode import LeafNode
+from htmlnode import LeafNode, ParentNode
 from markdown_blocks import (
     block_to_block_type,
-    heading_block_to_html,
+    code_block_to_htmlNode,
+    heading_block_to_htmlNode,
     markdown_to_blocks,
     block_type_paragraph,
     block_type_heading,
@@ -11,7 +12,10 @@ from markdown_blocks import (
     block_type_quote,
     block_type_unordered_list,
     block_type_ordered_list,
-    paragraph_block_to_html
+    markdown_to_html_nodes,
+    ordered_list_block_to_htmlNode,
+    paragraph_block_to_htmlNode,
+    unorderd_list_block_to_htmlNode,
 )
 
 class TestMarkdownBlocks(unittest.TestCase):
@@ -127,23 +131,69 @@ class TestMarkdownBlocks(unittest.TestCase):
     def test_paragraph_to_HtmlNode(self):
         markdown = "This is a paragraph of text\nWith a another line of text in same text block."
         block_type = block_to_block_type(markdown)
-        htmlNode = paragraph_block_to_html(markdown, block_type)
+        htmlNode = paragraph_block_to_htmlNode(markdown, block_type)
         self.assertEqual(
             htmlNode,
             LeafNode("p", "This is a paragraph of text\nWith a another line of text in same text block.", None)
         )
 
-    def test_heading1_to_HtmlNode(self):
+    def heading_block_to_htmlNode(self):
         markdown = "# This is a heading"
         block_type = block_to_block_type(markdown)
-        htmlNode = heading_block_to_html(markdown, block_type)
+        htmlNode = heading_block_to_htmlNode(markdown, block_type)
 
         self.assertEqual(
             htmlNode,
             LeafNode("h1", "This is a heading", None)
         )
 
+    def test_unordered_list_to_HtmlNode(self):
+        markdown = "* This is an unordered list item\n- this is a second list item"
+        block_type = block_to_block_type(markdown)
+        htmlNode = unorderd_list_block_to_htmlNode(markdown, block_type)
 
+        self.assertEqual(
+            htmlNode,
+            ParentNode(
+                "ul",
+                [
+                    LeafNode("li", "This is an unordered list item", None),
+                    LeafNode("li", "this is a second list item", None)
+                ],
+                None)
+        )
+
+    def test_ordered_list_to_HtmlNode(self):
+        markdown = "1. This is an ordered list item\n2. This is another ordered list item"
+        block_type = block_to_block_type(markdown)
+        htmlNode = ordered_list_block_to_htmlNode(markdown, block_type)
+
+        self.assertEqual(
+            htmlNode,
+            ParentNode(
+                "ol",
+                [
+                    LeafNode("li", "This is an ordered list item", None),
+                    LeafNode("li", "This is another ordered list item", None)
+                ],
+                None)
+        )
+
+    def test_code_block_to_htmlNode(self):
+        markdown = "```\ncode\n```"
+
+        block_type = block_to_block_type(markdown)
+        htmlNode = code_block_to_htmlNode(markdown, block_type)
+
+        self.assertEqual(
+            htmlNode,
+            LeafNode("blockquote","\ncode\n", None)
+        )
+
+    def test_markdown_to_html_nodes(self):
+        markdown = "## Basic Markdown Example\n\nThis is a paragraph explaining some basic markdown elements. \n\n```Here's a code block demonstrating Python code for printing Hello, world: python\nprint(\"Hello, world!\")```\n\n\nHere are some uses of lists:\n\n* Unordered list using asterisks:\n  * Item 1\n  * Item 2\n  * Item 3\n* Ordered list using numbers:\n  1. Step 1\n  2. Step 2\n  3. Step 3\n"
+
+        markdown_to_html_nodes(markdown)
 
 
 if __name__ == "__main__":

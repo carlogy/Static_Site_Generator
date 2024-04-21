@@ -1,5 +1,5 @@
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 from textnode import TextNode
 
 
@@ -24,9 +24,9 @@ def block_to_block_type(block):
     for line in lines_in_block:
         # print(f"the current line: {line}")
         # print(f"the first characters in line: {line[:2]}\n {len(line[:2])}")
-        first_two_chars = line[0]
+        first_char = line[:1]
 
-        match first_two_chars:
+        match first_char:
 
             case "#":
                 if line.startswith("# "):
@@ -83,7 +83,7 @@ def block_to_block_type(block):
                 return block_type_paragraph
 
 
-def paragraph_block_to_html(block, block_type):
+def paragraph_block_to_htmlNode(block, block_type):
 
     if block_type != block_type_paragraph:
         raise ValueError("invalid blocktype.")
@@ -103,10 +103,57 @@ def heading_block_to_htmlNode(block, block_type):
     return heading_node
 
 def unorderd_list_block_to_htmlNode(block, block_type):
-    pass
+    list_items = [item.lstrip("*- ") for item in block.split("\n")]
+
+    children_nodes = []
+    for item in list_items:
+        children_nodes.append(LeafNode("li", item, None))
+
+    htmlNode = ParentNode("ul", children_nodes, None)
+
+    return htmlNode
+
 
 def ordered_list_block_to_htmlNode(block, block_type):
-    pass
+    list_items = [item.lstrip(f"{item[0]}. ") for item in block.split("\n")]
 
-def quote_block_to_htmlNode(block, block_type):
-    pass
+    children_nodes = []
+    for item in list_items:
+        children_nodes.append(LeafNode("li", item, None))
+
+    htmlNode = ParentNode("ol", children_nodes, None)
+
+    return htmlNode
+
+def code_block_to_htmlNode(block, block_type):
+
+    stripped_block = block.strip("` ")
+
+    htmlNode = LeafNode("blockquote", stripped_block, None)
+
+    return htmlNode
+
+
+def markdown_to_html_nodes(markdown):
+
+    markdown_blocks = markdown_to_blocks(markdown)
+
+    for block in markdown_blocks:
+        print(f"block:\n{block}\n")
+
+        block_type = block_to_block_type(block)
+
+        print(f"type:\n{block_type}\n")
+
+    print(markdown_blocks)
+
+
+#TO DO's with this function:
+# takes a full markdown document and splits it into blocks
+#
+# use the split to blocks function
+#
+# top level should be div whith all the blocks being children
+#
+#
+# blocks should have own inline children
