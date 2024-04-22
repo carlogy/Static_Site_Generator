@@ -52,7 +52,6 @@ class LeafNode(HTMLNode):
         return f"LeafNode({self.tag}, {self.value}, {self.props})"
 
 
-
 class ParentNode(HTMLNode):
     def __init__(self, tag, children, props) -> None:
         super().__init__(tag, children, props)
@@ -67,12 +66,19 @@ class ParentNode(HTMLNode):
             raise ValueError("Parent has no children")
 
         html_children = []
-        for i in range(len(self.children)):
+        for i in range(0,len(self.children)):
             if self.children[i].tag is None and self.children[i].props is None:
                 html_children.append(f"{self.children[i].value}")
             html_children.append(f"<{self.children[i].tag}{self.children[i].props_to_html()}>{self.children[i].value}</{self.children[i].tag}>")
         complete_html = f"<{self.tag}{self.props_to_html()}>{"".join(html_children)}</{self.tag}>"
         return complete_html
+
+    def __eq__(self, otherNode) -> bool:
+        return (
+            self.tag == otherNode.tag
+            and self.children == otherNode.children
+            and self.props == otherNode.props
+        )
 
     def __repr__(self):
         return f"ParentNode({self.tag}, {self.children}, {self.props})"

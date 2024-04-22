@@ -193,6 +193,7 @@ def split_nodes_links(old_nodes):
 
 def text_to_textnodes(text):
     starting_node = [TextNode(text, text_type_text)]
+
     new_nodes = []
 
     split_node_list = split_nodes_delimiter(starting_node, "**", text_type_bold)

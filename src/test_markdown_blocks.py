@@ -15,7 +15,7 @@ from markdown_blocks import (
     markdown_to_html_nodes,
     ordered_list_block_to_htmlNode,
     paragraph_block_to_htmlNode,
-    unorderd_list_block_to_htmlNode,
+    unordered_list_block_to_htmlNode,
 )
 
 class TestMarkdownBlocks(unittest.TestCase):
@@ -89,11 +89,12 @@ class TestMarkdownBlocks(unittest.TestCase):
         )
 
     def test_code_block(self):
-        markdown_text = "``` def hello_world():\n\tprint('Hello World!') ```"
+        markdown_text = "```\ndef hello_world():\n\tprint('Hello World!')\n```"
         block_type = block_to_block_type(markdown_text)
         self.assertEqual(
             block_type,
             block_type_code
+
         )
 
     def test_quote_block(self):
@@ -104,8 +105,16 @@ class TestMarkdownBlocks(unittest.TestCase):
             block_type_quote
         )
 
-    def test_not_mixed_unorded_list(self):
-        markdown_text = "* This is an unordered list item\n- this is a second list item"
+    def test_unorded_dash_list(self):
+        markdown_text = "- This is an unordered list item\n- this is a second list item"
+        block_type = block_to_block_type(markdown_text)
+        self.assertEqual(
+            block_type,
+            block_type_unordered_list
+        )
+
+    def test_unordered_asterisk_list(self):
+        markdown_text = "* This is an unordered list item\n* this is a second list item"
         block_type = block_to_block_type(markdown_text)
         self.assertEqual(
             block_type,
@@ -134,23 +143,38 @@ class TestMarkdownBlocks(unittest.TestCase):
         htmlNode = paragraph_block_to_htmlNode(markdown, block_type)
         self.assertEqual(
             htmlNode,
-            LeafNode("p", "This is a paragraph of text\nWith a another line of text in same text block.", None)
+            ParentNode(
+                "p",
+                [
+                    LeafNode(
+                        None,
+                        "This is a paragraph of text\nWith a another line of text in same text block.",
+                        None)
+                ],
+            None
+            )
         )
 
-    def heading_block_to_htmlNode(self):
+    def test_heading_block_to_htmlNode(self):
         markdown = "# This is a heading"
         block_type = block_to_block_type(markdown)
         htmlNode = heading_block_to_htmlNode(markdown, block_type)
 
         self.assertEqual(
             htmlNode,
-            LeafNode("h1", "This is a heading", None)
+            ParentNode(
+                "h1",
+                [
+                    LeafNode(None, "This is a heading", None)
+                ],
+                None
+            )
         )
 
     def test_unordered_list_to_HtmlNode(self):
-        markdown = "* This is an unordered list item\n- this is a second list item"
+        markdown = "* This is an unordered list item\n* this is a second list item"
         block_type = block_to_block_type(markdown)
-        htmlNode = unorderd_list_block_to_htmlNode(markdown, block_type)
+        htmlNode = unordered_list_block_to_htmlNode(markdown, block_type)
 
         self.assertEqual(
             htmlNode,
@@ -184,14 +208,13 @@ class TestMarkdownBlocks(unittest.TestCase):
 
         block_type = block_to_block_type(markdown)
         htmlNode = code_block_to_htmlNode(markdown, block_type)
-
         self.assertEqual(
             htmlNode,
-            LeafNode("blockquote","\ncode\n", None)
+            ParentNode("blockquote", [LeafNode(None,"\ncode\n", None)], None)
         )
 
     def test_markdown_to_html_nodes(self):
-        markdown = "## Basic Markdown Example\n\nThis is a paragraph explaining some basic markdown elements. \n\n```Here's a code block demonstrating Python code for printing Hello, world: python\nprint(\"Hello, world!\")```\n\n\nHere are some uses of lists:\n\n* Unordered list using asterisks:\n  * Item 1\n  * Item 2\n  * Item 3\n* Ordered list using numbers:\n  1. Step 1\n  2. Step 2\n  3. Step 3\n"
+        markdown = "## Basic Markdown Example\n\nThis is a paragraph explaining some basic markdown elements. \n\n```Here's a code block demonstrating Python code for printing Hello, world: python\nprint(\"Hello, world!\")```\n\n\nHere are some uses of lists:\n\n* Unordered list using asterisks:\n* Item 1\n* Item 2\n* Item 3\n\n* Ordered list using numbers:\n\n1. Step 1\n2. Step 2\n3. Step 3\n"
 
         markdown_to_html_nodes(markdown)
 
