@@ -15,6 +15,7 @@ from markdown_blocks import (
     markdown_to_html_nodes,
     ordered_list_block_to_htmlNode,
     paragraph_block_to_htmlNode,
+    quote_block_to_htmlNode,
     unordered_list_block_to_htmlNode,
 )
 
@@ -210,13 +211,55 @@ class TestMarkdownBlocks(unittest.TestCase):
         htmlNode = code_block_to_htmlNode(markdown, block_type)
         self.assertEqual(
             htmlNode,
-            ParentNode("blockquote", [LeafNode(None,"\ncode\n", None)], None)
+            ParentNode(
+                "pre",
+                [
+                    ParentNode(
+                        "code",
+                        [
+                            LeafNode(
+                                None,
+                                "\ncode\n",
+                                None
+                            )
+                        ],
+                        None
+                    )
+                ],
+                None
+            )
+        )
+
+    def test_quote_block_to_htmlNode(self):
+        markdown = "> This is a quote\n> With another line of quotes here"
+        block_type = block_to_block_type(markdown)
+        htmlNode = quote_block_to_htmlNode(markdown, block_type)
+        self.assertEqual(
+            htmlNode,
+            ParentNode(
+                "blockquote",
+                [
+                    LeafNode(
+                        None,
+                        "This is a quote\nWith another line of quotes here",
+                        None
+                    )
+                ],
+                None
+            )
         )
 
     def test_markdown_to_html_nodes(self):
         markdown = "## Basic Markdown Example\n\nThis is a paragraph explaining some basic markdown elements. \n\n```Here's a code block demonstrating Python code for printing Hello, world: python\nprint(\"Hello, world!\")```\n\n\nHere are some uses of lists:\n\n* Unordered list using asterisks:\n* Item 1\n* Item 2\n* Item 3\n\n* Ordered list using numbers:\n\n1. Step 1\n2. Step 2\n3. Step 3\n"
 
-        markdown_to_html_nodes(markdown)
+        html_nodes = markdown_to_html_nodes(markdown)
+
+        self.assertEqual(
+            html_nodes,
+            '<div><h2>Basic Markdown Example</h2><p>This is a paragraph explaining some basic markdown elements.</p><pre><code>Here\'s a code block demonstrating Python code for printing Hello, world: python\nprint("Hello, world!")</code></pre><p>Here are some uses of lists:</p><ul><li>Unordered list using asterisks:</li><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul><ul><li>Ordered list using numbers:</li></ul><ol><li>Step 1</li><li>Step 2</li><li>Step 3</li></ol></div>'
+        )
+
+
 
 
 if __name__ == "__main__":

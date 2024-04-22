@@ -80,7 +80,7 @@ class TestHTMLNode(unittest.TestCase):
         )
         self.assertEqual(
             node.to_html(),
-            '<p><b href="https://www.google.com" target="_blank">Bold text</b>Normal text<None>Normal text</None><i>italic text</i>Normal text<None>Normal text</None></p>'
+            '<p><b href="https://www.google.com" target="_blank">Bold text</b>Normal text<i>italic text</i>Normal text</p>'
         )
 
     def test_parent_no_tag(self):

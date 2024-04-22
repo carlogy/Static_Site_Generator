@@ -66,11 +66,18 @@ class ParentNode(HTMLNode):
             raise ValueError("Parent has no children")
 
         html_children = []
+
+
         for i in range(0,len(self.children)):
-            if self.children[i].tag is None and self.children[i].props is None:
-                html_children.append(f"{self.children[i].value}")
-            html_children.append(f"<{self.children[i].tag}{self.children[i].props_to_html()}>{self.children[i].value}</{self.children[i].tag}>")
+            # if self.children[i].tag is None and self.children[i].props is None:
+            #     # html_children.append(f"{self.children[i].value}")
+            #     html_children.append(self.children[i].to_html())
+            # print(f"{"*-" * 50}\n{self.children[i].to_html()}\n{"*-" * 50}")
+            html_children.append(self.children[i].to_html())
+        # print(f"{"=" * 50}\n{html_children}\n{"=" * 50}\n")
+            # html_children.append(f"<{self.children[i].tag}{self.children[i].props_to_html()}>{self.children[i].value}</{self.children[i].tag}>")
         complete_html = f"<{self.tag}{self.props_to_html()}>{"".join(html_children)}</{self.tag}>"
+        # print(f"{"#" * 50}\n{complete_html}\n{"#" * 50}\n")
         return complete_html
 
     def __eq__(self, otherNode) -> bool:
