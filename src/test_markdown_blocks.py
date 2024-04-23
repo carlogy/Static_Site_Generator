@@ -259,7 +259,20 @@ class TestMarkdownBlocks(unittest.TestCase):
             '<div><h2>Basic Markdown Example</h2><p>This is a paragraph explaining some basic markdown elements.</p><pre><code>Here\'s a code block demonstrating Python code for printing Hello, world: python\nprint("Hello, world!")</code></pre><p>Here are some uses of lists:</p><ul><li>Unordered list using asterisks:</li><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul><ul><li>Ordered list using numbers:</li></ul><ol><li>Step 1</li><li>Step 2</li><li>Step 3</li></ol></div>'
         )
 
+    def test_paragraph(self):
+            md = """
+    This is **bolded** paragraph
+    text in a p
+    tag here
 
+    """
+
+            node = markdown_to_html_nodes(md)
+            print(repr(node))
+            self.assertEqual(
+                node,
+                "<div><p>This is <b>bolded</b> paragraph\n    text in a p\n    tag here</p></div>",
+            )
 
 
 if __name__ == "__main__":

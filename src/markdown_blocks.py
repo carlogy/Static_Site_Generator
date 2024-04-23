@@ -12,9 +12,13 @@ block_type_unordered_list = "unordered_list"
 block_type_ordered_list = "ordered_list"
 
 def markdown_to_blocks(markdown):
+
     split_markdown = markdown.split("\n\n")
 
-    scrubbed_blocks = [block.strip() for block in split_markdown if block != "" and block != " "]
+    scrubbed_blocks = [block.strip() for block in split_markdown if block != "" or block != " "]
+
+    if "" in scrubbed_blocks:
+        scrubbed_blocks.remove("")
 
     return scrubbed_blocks
 

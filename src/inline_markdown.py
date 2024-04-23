@@ -11,6 +11,7 @@ from textnode import (
 )
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
+
     new_nodes = []
     for node in old_nodes:
         if (node.text_type != text_type_text
@@ -22,11 +23,12 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 new_nodes.append(node)
         sections = []
         splitsections = node.text.split(delimiter)
+
         if len(splitsections) % 2 == 0:
             raise ValueError("Invalid Markdown syntax")
         if len(splitsections) % 2 != 0:
             for i in range(len(splitsections)):
-                if i % 2 == 0 and splitsections[i] != "":
+                if i % 2 == 0 and splitsections[i] != "" and splitsections[i] != " ":
                     sections.append(TextNode(splitsections[i], text_type_text, None))
                 if i % 2 != 0:
                     sections.append(TextNode(splitsections[i], text_type))
@@ -41,6 +43,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 # # if i > 1 and splitsections[i] != "":
                 # #     sections.append(TextNode(splitsections[i], "text", None))
         new_nodes.extend(sections)
+
     return new_nodes
 
 def extract_markdown_images(text):
@@ -192,7 +195,11 @@ def split_nodes_links(old_nodes):
 #     return new_nodes
 
 def text_to_textnodes(text):
+
+
     starting_node = [TextNode(text, text_type_text)]
+
+
 
     new_nodes = []
 
@@ -213,5 +220,3 @@ def text_to_textnodes(text):
     new_nodes.extend(split_node_list)
 
     return new_nodes
-
-    # print(updated_string[-1])
