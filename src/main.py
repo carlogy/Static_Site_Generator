@@ -1,40 +1,47 @@
-from genericpath import isdir
 import os
+import shutil
 
 from textnode import TextNode
 
 
 def main():
-    node = TextNode("This is a node", "bold", "https://www.boot.dev")
-    print(repr(node))
+    # node = TextNode("This is a node", "bold", "https://www.boot.dev")
+    # print(repr(node))
 
-    def search_dir_contents(path):
-        static_dir = path
-        if not os.path.exists(static_dir):
-            raise IsADirectoryError("The directory does not exist, or system permissions for this directory are not granted.\n Run ls -l (dir_path) to view permission.\nTo modify with chomd.")
+    static_path = "./static"
+    public_path = "./public"
 
-        if os.path.exists(static_dir):
-            current_file_structure = os.listdir(static_dir)
-            with os.scandir(static_dir) as scan_current_dir:
-                for entry in scan_current_dir:
+
+
+    def copy_directory(path):
+        if not os.path.exists(path):
+            raise IsADirectoryError("The directory does not exist, or system permissions for this directory are not granted.\n Run ls -l (dir_path) to view permission.\nTo modify use command chomd.")
+        folder_structure = {}
+
+        if os.path.exists(path):
+            print(f"The path exists! {path}")
+
+            with os.scandir(path) as scanned_directory:
+                print(type(scanned_directory))
+
+
+                list_of_scanned_dir = sorted(scanned_directory, key=lambda entry: entry.is_dir(),)
+
+                current_public_path = public_path
+                for entry in list_of_scanned_dir:
                     if entry.is_file():
-                        print(f"Is file: {entry}")
+                        print(f"{entry.name} is a valid file\nLocated in: {entry.path}\n")
+                        shutil.copy(entry.path, current_public_path)
                     if entry.is_dir():
-                        print(f"is Directory:{entry}")
-                        sub_path = os.path.join(entry)
-                        if os.path.exists(sub_path):
-                            print("It exists!")
-                            with os.scandir(sub_path) as scanned_sub_dir:
-                                for sub_entry in scanned_sub_dir:
-                                    if sub_entry.is_file():
-                                        print(f"Is File: {sub_entry}")
-                                    if sub_entry.is_dir():
-                                        print(f"is Directory: {sub_entry}")
+                        print(f"{entry.name} is a directory\nIt's path is: {entry.path}")
+                        with os.scandir(public_path) as child_directory:
+                            if entry.name not in list(child_directory):
+                                print("The directory doesn't exists!")
 
-        # print(current_file_structure)
+                                os.mkdir(f"{current_public_path}/{entry.name}")
+                                current_public_path = f"{current_public_path}/{entry.name}"
+                                copy_directory(entry.path)
 
-
-
-
+    # copy_directory(static_path)
 
 main()
