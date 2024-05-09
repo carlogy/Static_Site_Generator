@@ -76,38 +76,6 @@ def split_nodes_images(old_nodes):
         #     new_nodes.append(TextNode(current_text, text_type_text))
     return new_nodes
 
-# ORIGINAL IMPLEMENTATION
-# def split_nodes_images(old_nodes):
-#     new_nodes = []
-#     for node in old_nodes:
-#         current_text = node.text
-#         images = extract_markdown_images(current_text)
-
-#         if len(images) == 0 and current_text != "":
-#             new_nodes.append(node)
-
-
-#         for image in images:
-#             split_images = current_text.split(f"![{image[0]}]({image[1]})", 1)
-#             if not split_images[0] and split_images[1]:
-#                 new_nodes.append(TextNode(image[0], text_type_image, image[1]))
-#                 current_text = split_images[1]
-#                 continue
-#             if not split_images[0].strip() and not split_images[1]:
-#                 new_nodes.append(TextNode(image[0], text_type_image, image[1]))
-#                 continue
-#             if split_images[0] and "![" in split_images[1]:
-#                 new_nodes.append(TextNode(split_images[0], text_type_text))
-#                 new_nodes.append(TextNode(image[0], text_type_image, image[1]))
-#                 current_text = split_images[1]
-#                 continue
-#             if split_images[0] and not split_images[1]:
-#                 new_nodes.append(TextNode(split_images[0], text_type_text))
-#                 new_nodes.append(TextNode(image[0], text_type_image, image[1]))
-#                 continue
-
-#     return new_nodes
-
 def split_nodes_links(old_nodes):
     # print(f"the node!!!!!{old_nodes}")
     new_nodes = []
@@ -142,34 +110,6 @@ def split_nodes_links(old_nodes):
         # if current_text != "":
         #     new_nodes.append(TextNode(current_text, text_type_text))
     return new_nodes
-
-# This is the original implementation of split_nodes_links:
-
-# def split_nodes_links(old_nodes):
-#     new_nodes = []
-#     for node in old_nodes:
-#         current_text = node.text
-#         links = extract_markdown_links(current_text)
-#         if len(links) == 0 and current_text != "":
-#             new_nodes.append(node)
-#         for link in links:
-#             split_links = current_text.split(f"[{link[0]}]({link[1]})", 1)
-#             if not split_links[0] and split_links[1]:
-#                 new_nodes.append(TextNode(link[0], text_type_link, link[1]))
-#                 current_text = split_links[1]
-#                 continue
-#             if not split_links[0].strip() and not split_links[1]:
-#                 new_nodes.append(TextNode(link[0], text_type_link, link[1]))
-#                 continue
-#             if split_links[0] and "[" in split_links[1]:
-#                 new_nodes.append(TextNode(split_links[0], text_type_text))
-#                 new_nodes.append(TextNode(link[0], text_type_link, link[1]))
-#                 current_text = split_links[1]
-#             if split_links[0] and not split_links[1]:
-#                 new_nodes.append(TextNode(split_links[0], text_type_text))
-#                 new_nodes.append(TextNode(link[0], text_type_link, link[1]))
-#                 continue
-#     return new_nodes
 
 def text_to_textnodes(text):
     starting_node = [TextNode(text, text_type_text)]
